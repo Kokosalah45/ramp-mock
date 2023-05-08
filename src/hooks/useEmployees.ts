@@ -12,10 +12,16 @@ export function useEmployees(): EmployeeResult {
 
     setEmployees(employeesData)
   }, [fetchWithCache])
+  const fetchNew = async () => {
+    return
+  }
+  const fetchNext = async () => {
+    return
+  }
 
   const invalidateData = useCallback(() => {
     setEmployees(null)
   }, [])
 
-  return { data: employees, loading, fetchAll, invalidateData }
+  return { data: employees, loading, fetchAll, fetchNew, fetchNext, invalidateData }
 }

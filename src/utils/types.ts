@@ -21,10 +21,12 @@ export type PaginatedResponse<TData> = {
   data: TData
   nextPage: number | null
   pageSize: number
+  totalSize: number
 }
 
 export type PaginatedRequestParams = {
   page: number | null
+  employeeId: string
 }
 
 export type RequestByEmployeeParams = {

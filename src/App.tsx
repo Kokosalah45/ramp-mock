@@ -7,7 +7,6 @@ import { usePaginatedTransactions } from "./hooks/usePaginatedTransactions"
 import { useTransactionsByEmployee } from "./hooks/useTransactionsByEmployee"
 import { EMPTY_EMPLOYEE } from "./utils/constants"
 import { Employee } from "./utils/types"
-import { shallowEqual } from "./utils/helpers"
 
 export function App() {
   const { data: employees, ...employeeUtils } = useEmployees()
@@ -15,33 +14,31 @@ export function App() {
     data: paginatedTransactions,
     isLastPage,
     isLessThanPageSize,
+    currentResourceId,
     ...paginatedTransactionsUtils
   } = usePaginatedTransactions()
+
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
   const [isLoading, setIsLoading] = useState(false)
 
-  const transactions = useMemo(
-    () => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
-    [paginatedTransactions, transactionsByEmployee]
-  )
+  const transactions = useMemo(() => paginatedTransactions?.data ?? null, [paginatedTransactions])
 
   const loadAllTransactions = useCallback(async () => {
     setIsLoading(true)
     transactionsByEmployeeUtils.invalidateData()
-
     await employeeUtils.fetchAll()
-    await paginatedTransactionsUtils.fetchAll()
+    paginatedTransactionsUtils.invalidateData()
+    await paginatedTransactionsUtils.fetchNew("")
 
     setIsLoading(false)
   }, [employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
 
-  const loadTransactionsByEmployee = useCallback(
+  const loadTransactions = useCallback(
     async (employeeId: string) => {
       paginatedTransactionsUtils.invalidateData()
-      await transactionsByEmployeeUtils.fetchById(employeeId)
-      //await paginatedTransactionsUtils.fetchById(employeeId)
+      await paginatedTransactionsUtils.fetchNew(employeeId)
     },
-    [paginatedTransactionsUtils, transactionsByEmployeeUtils]
+    [paginatedTransactionsUtils]
   )
 
   useEffect(() => {
@@ -71,11 +68,7 @@ export function App() {
             if (newValue === null) {
               return
             }
-            if (shallowEqual(newValue, EMPTY_EMPLOYEE)) {
-              await loadAllTransactions()
-              return
-            }
-            await loadTransactionsByEmployee(newValue.id)
+            await loadTransactions(newValue.id)
           }}
         />
 
@@ -84,15 +77,16 @@ export function App() {
         <div className="RampGrid">
           <Transactions transactions={transactions} />
           {/* boolean logic -> !x or !y = !(x and y) */}
-          {!(transactions !== null && isLessThanPageSize) && (
-            <button
-              className="RampButton"
-              disabled={paginatedTransactionsUtils.loading}
-              onClick={async () => await loadAllTransactions()}
-            >
-              {isLastPage ? "Go to the top" : " View More"}
-            </button>
-          )}
+          {transactions === null ||
+            (!isLessThanPageSize && (
+              <button
+                className="RampButton"
+                disabled={paginatedTransactionsUtils.loading}
+                onClick={async () => await paginatedTransactionsUtils.fetchNext()}
+              >
+                {isLastPage ? "Go to the top" : " View More"}
+              </button>
+            ))}
         </div>
       </main>
     </Fragment>
