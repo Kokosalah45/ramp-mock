@@ -20,6 +20,7 @@ export type Employee = {
 export type PaginatedResponse<TData> = {
   data: TData
   nextPage: number | null
+  pageSize: number
 }
 
 export type PaginatedRequestParams = {

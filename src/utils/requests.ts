@@ -36,6 +36,7 @@ export const getTransactionsPaginated = ({
   return {
     nextPage,
     data: data.transactions.slice(start, end),
+    pageSize: TRANSACTIONS_PER_PAGE,
   }
 }
 

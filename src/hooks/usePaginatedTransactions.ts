@@ -11,6 +11,7 @@ import { useCustomFetch } from "./useCustomFetch"
 export function usePaginatedTransactions(): PaginatedTransactionsResult & {
   fetchById: (employeeId: string) => any
   isLastPage: boolean
+  isLessThanPageSize: boolean
 } {
   const { fetchWithCache, loading } = useCustomFetch()
   const [paginatedTransactions, setPaginatedTransactions] = useState<PaginatedResponse<
@@ -18,7 +19,8 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult & {
   > | null>(null)
 
   const isLastPage = !!paginatedTransactions?.data && !paginatedTransactions.nextPage
-
+  const isLessThanPageSize =
+    paginatedTransactions !== null && paginatedTransactions.data.length < paginatedTransactions.pageSize
   const fetchAll = useCallback(async () => {
     const response = await fetchWithCache<PaginatedResponse<Transaction[]>, PaginatedRequestParams>(
       "paginatedTransactions",
@@ -32,7 +34,7 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult & {
         return response
       }
 
-      return { data: response.data, nextPage: response.nextPage }
+      return { data: response.data, nextPage: response.nextPage, pageSize: response.pageSize }
     })
   }, [fetchWithCache, paginatedTransactions])
 
@@ -51,7 +53,7 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult & {
           return response
         }
 
-        return { data: response.data, nextPage: response.nextPage }
+        return { data: response.data, nextPage: response.nextPage, pageSize: response.pageSize }
       })
     },
     [fetchWithCache, paginatedTransactions]
@@ -61,5 +63,13 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult & {
     setPaginatedTransactions(null)
   }, [])
 
-  return { data: paginatedTransactions, fetchById, loading, fetchAll, invalidateData, isLastPage }
+  return {
+    data: paginatedTransactions,
+    fetchById,
+    loading,
+    fetchAll,
+    invalidateData,
+    isLastPage,
+    isLessThanPageSize,
+  }
 }

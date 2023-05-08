@@ -14,6 +14,7 @@ export function App() {
   const {
     data: paginatedTransactions,
     isLastPage,
+    isLessThanPageSize,
     ...paginatedTransactionsUtils
   } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
@@ -82,8 +83,8 @@ export function App() {
 
         <div className="RampGrid">
           <Transactions transactions={transactions} />
-
-          {transactions !== null && (
+          {/* boolean logic -> !x or !y = !(x and y) */}
+          {!(transactions !== null && isLessThanPageSize) && (
             <button
               className="RampButton"
               disabled={paginatedTransactionsUtils.loading}
