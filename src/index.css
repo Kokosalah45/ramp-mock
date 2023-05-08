@@ -8,6 +8,7 @@
   --color-accent: #f4ff56;
   --color-constructive: #109d46;
   --color-destructive: #d94b03;
+  --form-control-disabled: #959495;
 }
 
 html,
@@ -126,6 +127,7 @@ hr.RampBreak--l {
 }
 
 .RampInputCheckbox--label {
+  display: none !important;
   border: 1px solid var(--color-light-shade);
   background-color: var(--color-lighter-shade);
   display: flex;
@@ -150,7 +152,45 @@ hr.RampBreak--l {
 }
 
 .RampInputCheckbox--input {
-  display: none;
+  cursor: pointer;
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  appearance: none;
+  /* For iOS < 15 to remove gradient background */
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--color-light-shade);
+  background-color: var(--color-lighter-shade);
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+}
+
+.RampInputCheckbox--input::before {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--color-constructive);
+  background-color: CanvasText;
+}
+
+.RampInputCheckbox--input:checked::before {
+  transform: scale(1);
+}
+.RampInputCheckbox--input:focus::before {
+  outline: max(2px, 0.15em) solid currentColor;
+  outline-offset: max(2px, 0.15em);
+}
+.RampInputCheckbox--input:disabled {
+  --form-control-color: var(--form-control-disabled);
+  color: var(--form-control-disabled);
+  cursor: not-allowed;
 }
 
 .RampButton {

@@ -14,6 +14,7 @@ export const Transactions: TransactionsComponent = ({ transactions }) => {
         value: newValue,
       })
     },
+
     [fetchWithoutCache]
   )
 

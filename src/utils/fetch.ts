@@ -5,7 +5,6 @@ import {
   setTransactionApproval,
 } from "./requests"
 import { PaginatedRequestParams, RequestByEmployeeParams, SetTransactionApprovalParams } from "./types"
-
 const timeout = getTimeout()
 const mockTimeout = 1 * timeout
 
